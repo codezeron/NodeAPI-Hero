@@ -2,7 +2,7 @@ import { compare, hash } from "bcrypt"
 import { UserRepository } from "../repositories/UserRepository"
 import { s3 } from "../config/aws";
 import {v4 as uuid} from "uuid"
-import { sign } from "jsonwebtoken";
+import { sign, verify } from "jsonwebtoken";
 
 class UserServices{
     private userRepository : UserRepository
@@ -77,14 +77,37 @@ class UserServices{
             subject: findUser.id,
             expiresIn: 60 * 15,
         });
+        const refreshToken = sign({email},secretkey,{
+            subject: findUser.id,
+            expiresIn: '7d',
+        });
 
         return{
             token,
+            refresh_token: refreshToken,
             user:{
                 name: findUser.name,
                 email: findUser.email,
             }
         }
+    }
+
+    async refresh(refresh_token: string ){
+        
+        if(!refresh_token){
+            throw new Error('refresh token is missing')
+        }
+        let secretkey: string | undefined = process.env.ACESS_KEY_TOKEN;
+        if(!secretkey){
+            throw new Error('There is no token key')
+        }   
+        
+        const verifyRefreshToken = verify(refresh_token, secretkey)
+        const {sub} = verifyRefreshToken
+        const newToken = sign({sub}, secretkey, {
+            expiresIn: 60*15
+        })
+        return {token: newToken}
     }
 }
 export {UserServices}

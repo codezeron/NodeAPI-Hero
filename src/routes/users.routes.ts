@@ -25,6 +25,8 @@ class UsersRoutes{
             this.userscontroller.auth.bind(this.userscontroller),
         );
         
+        this.router.post('/refresh', this.userscontroller.refresh.bind(this.userscontroller))
+
         this.router.put('/',
             upload.single('avatar_url'),
             this.authmiddleware.auth.bind(this.authmiddleware),
