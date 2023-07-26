@@ -1,25 +1,22 @@
 import { ForwardRefRenderFunction, ReactNode, forwardRef } from 'react';
-import style from './Input.module.css';
+import style from './InputSchedule.module.css';
 
 interface IInput {
   placeholder: string;
   type: 'password' | 'text' | 'date';
   error?: string;
-  icon?: ReactNode;
 }
 const InputBase: ForwardRefRenderFunction<HTMLInputElement, IInput> = (
-  { placeholder, type, error, icon, ...rest },
+  { placeholder, type, error, ...rest },
   ref,
 ) => {
   return (
     <div className={style.container}>
-      <label htmlFor="">
-        <i aria-hidden="true">{icon}</i>
-        <input type={type} placeholder={placeholder} ref={ref} {...rest} />
-      </label>
+      <label htmlFor="">{placeholder}</label>
+      <input type={type} ref={ref} {...rest} />
       {error && <span>{error}</span>}
     </div>
   );
 };
 
-export const Input = forwardRef(InputBase);
+export const InputSchedule = forwardRef(InputBase);
